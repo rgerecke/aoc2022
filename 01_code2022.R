@@ -87,3 +87,44 @@ df |>
   summarise(sum(c))
 
 ## 12424
+
+
+# day 03 -------------
+
+df <- read_csv("data/2022/day03.csv", col_names = "a")
+
+find_match <- function(list1, list2) {
+
+}
+
+df |>
+  mutate(
+    b = str_sub(a, end = str_length(a) / 2) |>
+      str_split(boundary("character")),
+    c = str_sub(a, start = (str_length(a) / 2) + 1) |>
+      str_split(boundary("character"))
+  ) |>
+  unnest(b) |>
+  unnest(c) |>
+  filter(b == c) |>
+  distinct(a, b, c) |>
+  mutate(d = match(c, c(letters, LETTERS))) |>
+  summarise(sum(d))
+
+## 7737
+
+## part 2 -------------
+
+df |>
+  mutate(
+    a = str_split(a, boundary("character")) |>
+      map(unique),
+    b = cumsum(row_number() %% 3 == 1)
+  ) |>
+  unnest(a) |>
+  count(b, a) |>
+  filter(n == 3) |>
+  mutate(d = match(a, c(letters, LETTERS))) |>
+  summarise(sum(d))
+
+## 2697
