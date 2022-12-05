@@ -128,3 +128,57 @@ df |>
   summarise(sum(d))
 
 ## 2697
+
+
+# day 04 ------------
+
+df <- read_csv("data/2022/day04.csv",
+               col_names = c("a", "b"))
+
+comp <- function(a, b) {
+  amin <- as.numeric(str_extract(a, ".*(?=\\-)"))
+  amax <- as.numeric(str_extract(a, "(?<=\\-).*"))
+
+  bmin <- as.numeric(str_extract(b, ".*(?=\\-)"))
+  bmax <- as.numeric(str_extract(b, "(?<=\\-).*"))
+
+  if (amin == bmin | amax == bmax) {
+    return(TRUE)
+  } else if (amin > bmin) {
+      return(amax < bmax)
+  } else if (amin < bmin) {
+      return(amax > bmax)
+  }
+}
+
+df |>
+  mutate(c = map2_lgl(a, b, comp)) |>
+  summarise(sum(c))
+
+## 605
+
+
+## part 2 ------------------
+
+comp2 <- function(a, b) {
+  amin <- as.numeric(str_extract(a, ".*(?=\\-)"))
+  amax <- as.numeric(str_extract(a, "(?<=\\-).*"))
+
+  bmin <- as.numeric(str_extract(b, ".*(?=\\-)"))
+  bmax <- as.numeric(str_extract(b, "(?<=\\-).*"))
+
+  if (amin == bmin | amax == bmax |
+      amin == bmax | amax == bmin) {
+    return(TRUE)
+  } else if (amin > bmin) {
+    return(amin < bmax)
+  } else if (amin < bmin) {
+    return(amax > bmin)
+  }
+}
+
+df |>
+  mutate(c = map2_lgl(a, b, comp2)) |>
+  summarise(sum(c))
+
+## 914
