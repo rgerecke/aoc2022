@@ -182,3 +182,80 @@ df |>
   summarise(sum(c))
 
 ## 914
+
+
+# day 05 -------------
+
+df <- read_csv("data/2022/day05.csv",
+               skip = 10,
+               col_names = "a")
+
+
+df_unglue <- unglue(df$a, "move {x} from {from} to {to}",
+                    convert = TRUE)
+
+
+
+#         [J]         [B]     [T]
+#         [M] [L]     [Q] [L] [R]
+#         [G] [Q]     [W] [S] [B] [L]
+# [D]     [D] [T]     [M] [G] [V] [P]
+# [T]     [N] [N] [N] [D] [J] [G] [N]
+# [W] [H] [H] [S] [C] [N] [R] [W] [D]
+# [N] [P] [P] [W] [H] [H] [B] [N] [G]
+# [L] [C] [W] [C] [P] [T] [M] [Z] [W]
+# 1   2   3   4   5   6   7   8   9
+
+test <- list(
+  c("L", "N", "W", "T", "D"),
+  c("C", "P", "H"),
+  c("W", "P", "H", "N", "D", "G", "M", "J"),
+  c("C", "W", "S", "N", "T", "Q", "L"),
+  c("P", "H", "C", "N"),
+  c('T', 'H', 'N', 'D', 'M', 'W', 'Q', 'B'),
+  c('M', 'B', 'R', 'J', 'G', 'S', 'L'),
+  c('Z', 'N', 'W', 'G', 'V', 'B', 'R', 'T'),
+  c('W', 'G', 'D', 'N', 'P', 'L')
+)
+
+for (row in df_unglue) {
+
+  from_return <- head(test[[row$from]], -row$x)
+  to_return <- c(test[[row$to]], rev(tail(test[[row$from]], row$x)))
+
+  test[[row$from]] <- from_return
+  test[[row$to]] <- to_return
+}
+
+map_chr(test, tail, 1) |>
+  str_c(collapse = "")
+
+## TWSGQHNHL
+
+## part 2 ---------------
+
+test2 <- list(
+  c("L", "N", "W", "T", "D"),
+  c("C", "P", "H"),
+  c("W", "P", "H", "N", "D", "G", "M", "J"),
+  c("C", "W", "S", "N", "T", "Q", "L"),
+  c("P", "H", "C", "N"),
+  c('T', 'H', 'N', 'D', 'M', 'W', 'Q', 'B'),
+  c('M', 'B', 'R', 'J', 'G', 'S', 'L'),
+  c('Z', 'N', 'W', 'G', 'V', 'B', 'R', 'T'),
+  c('W', 'G', 'D', 'N', 'P', 'L')
+)
+
+for (row in df_unglue) {
+
+  from_return <- head(test2[[row$from]], -row$x)
+  to_return <- c(test2[[row$to]], tail(test2[[row$from]], row$x))
+
+  test2[[row$from]] <- from_return
+  test2[[row$to]] <- to_return
+}
+
+map_chr(test2, tail, 1) |>
+  str_c(collapse = "")
+
+## JNRSCDWPP
