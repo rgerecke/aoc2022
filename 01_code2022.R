@@ -259,3 +259,35 @@ map_chr(test2, tail, 1) |>
   str_c(collapse = "")
 
 ## JNRSCDWPP
+
+# day 06 ---------------
+library(tidytext)
+
+df <- read_csv("data/2022/day06.csv",
+               col_names = "a")
+
+df |>
+  mutate(a = str_split(a, boundary("character")) |>
+           map_chr(~str_c(.,collapse = " "))) |>
+  unnest_tokens(b, a, token = "ngrams", n = 4) |>
+  mutate(
+    b = str_split(b, " "),
+    c = map_dbl(b, ~length(unique(.))),
+    d = row_number() + 3) |>
+  filter(c == 4)
+
+## 1238
+
+## part 2 ------------------
+
+df |>
+  mutate(a = str_split(a, boundary("character")) |>
+           map_chr(~str_c(.,collapse = " "))) |>
+  unnest_tokens(b, a, token = "ngrams", n = 14) |>
+  mutate(
+    b = str_split(b, " "),
+    c = map_dbl(b, ~length(unique(.))),
+    d = row_number() + 13) |>
+  filter(c == 14)
+
+## 3037
