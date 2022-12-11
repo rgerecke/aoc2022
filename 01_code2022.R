@@ -259,3 +259,141 @@ map_chr(test2, tail, 1) |>
   str_c(collapse = "")
 
 ## JNRSCDWPP
+
+# day 06 ---------------
+library(tidytext)
+
+df <- read_csv("data/2022/day06.csv",
+               col_names = "a")
+
+df |>
+  mutate(a = str_split(a, boundary("character")) |>
+           map_chr(~str_c(.,collapse = " "))) |>
+  unnest_tokens(b, a, token = "ngrams", n = 4) |>
+  mutate(
+    b = str_split(b, " "),
+    c = map_dbl(b, ~length(unique(.))),
+    d = row_number() + 3) |>
+  filter(c == 4)
+
+## 1238
+
+## part 2 ------------------
+
+df |>
+  mutate(a = str_split(a, boundary("character")) |>
+           map_chr(~str_c(.,collapse = " "))) |>
+  unnest_tokens(b, a, token = "ngrams", n = 14) |>
+  mutate(
+    b = str_split(b, " "),
+    c = map_dbl(b, ~length(unique(.))),
+    d = row_number() + 13) |>
+  filter(c == 14)
+
+## 3037
+
+# day 07 ------------------
+
+## with great debt owed to
+## https://github.com/KT421/advent-of-code/blob/main/2022/dec07.R
+## thrilled that my code microbenchmarks faster though
+
+df <- read_csv("data/2022/day07.csv",
+               col_names = "a")
+
+current_dir <- "main"
+
+file_sizes <- tribble(~folder, ~size)
+
+for (x in df$a) {
+  # skip ls & dir lines
+  if (x == "$ cd /") next
+  if (x == "$ ls") next
+  if (str_detect(x, "^dir ")) next
+
+  # if terminal file, register size
+  if (str_detect(x, "[[:digit:]]")) {
+    file_sizes <- add_row(
+      file_sizes,
+      folder = current_dir,
+      size = parse_number(x)
+    )
+    next
+  }
+
+  # if change to subdirectory, update dirs
+  if (str_detect(x, "\\$ cd [[:alpha:]]")) {
+    current_dir <- str_c(
+      current_dir,
+      str_extract(x, "(?<=\\$ cd ).*"),
+      sep = " "
+    )
+    next
+  }
+
+  # if go back a directory, update dirs
+  if (x == "$ cd ..") {
+    current_dir <- str_remove(
+      current_dir,
+      "( [[:alpha:]]+)$"
+    )
+    next
+  }
+}
+
+all_folders <- file_sizes |>
+  separate(folder, LETTERS[1:10], fill = "right")
+
+all_sizes <- bind_rows(
+  group_by(all_folders, A) |>
+    summarise(size = sum(size)),
+  group_by(all_folders, across(A:B)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:C)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:D)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:E)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:F)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:G)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:H)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:I)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.)),
+  group_by(all_folders, across(A:J)) |>
+    summarise(size = sum(size), .groups = "drop") %>%
+    filter(complete.cases(.))
+)
+
+all_sizes |>
+  filter(size <= 100000) |>
+  summarise(size = sum(size))
+
+## 1391690
+
+## part 2 -----------------------------------
+
+## disk space = 70000000
+## main dir   = 44795677
+## space remaining = 25204323
+## space needed    = 30000000
+## space to clear  = 4795677
+
+all_sizes |>
+  filter(size >= 4795677) |>
+  arrange(size)
+
+## 5469168
+
+
