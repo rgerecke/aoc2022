@@ -397,3 +397,81 @@ all_sizes |>
 ## 5469168
 
 
+# day 08 --------------------
+
+df <- read_csv("data/2022/day08.csv",
+               col_names = "a")
+
+trees <- df |>
+  mutate(a = str_split(a, boundary("character"))) |>
+  pull(a) |>
+  reduce(c) |>
+  as.numeric() |>
+  matrix(nrow = nrow(df), byrow = TRUE)
+
+visible <- c()
+
+for (row in c(1:99)) {
+  for (col in c(1:99)) {
+    if (row == 1 | row == 99 | col == 1 | col == 99) {
+      visible <- c(visible, T)
+    } else {
+      tree <- trees[row, col]
+
+      above <- all(trees[1:(row-1), col:col] < tree)
+      below <- all(trees[(row+1):99, col:col] < tree)
+      left  <- all(trees[row:row, 1:(col-1)] < tree)
+      right <- all(trees[row:row, (col+1):99] < tree)
+
+      res <- any(above, below, left, right)
+
+      visible <- c(visible, res)
+    }
+  }
+}
+
+sum(visible)
+
+## 1698
+
+# part 2 --------------------
+
+get_score <- function (tree, dir) {
+  if (all(dir < tree)) {
+    return(length(dir))
+  } else {
+    return(min(which(dir >= tree)))
+  }
+}
+
+high_score <- 0
+
+for (row in c(1:99)) {
+  for (col in c(1:99)) {
+    if (row == 1 | row == 99 | col == 1 | col == 99) {
+      next
+    } else {
+      tree <- trees[row, col]
+
+      above <- get_score(tree, rev(trees[1:(row-1), col:col]))
+      below <- get_score(tree, trees[(row+1):99, col:col])
+      left  <- get_score(tree, rev(trees[row:row, 1:(col-1)]))
+      right <- get_score(tree, trees[row:row, (col+1):99])
+
+      res <- above * below * left * right
+
+      if (res > high_score) {
+        high_score <- res
+        next
+      } else {next}
+    }
+  }
+}
+
+## 672280
+
+
+
+
+
+
