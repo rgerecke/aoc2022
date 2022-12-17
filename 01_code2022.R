@@ -471,7 +471,185 @@ for (row in c(1:99)) {
 ## 672280
 
 
+# day 09 ------------------
 
+df <- read_csv("data/2022/day09.csv",
+               col_names = "a")
 
+h_pos <- c(0,0)
+t_pos <- c(0,0)
+t_hist <- list(c(0,0))
 
+move_h <- function(pos, dir) {
+  if (dir == "L") {
+    return(pos + c(-1, 0))
+  } else if (dir == "R") {
+    return(pos + c(1, 0))
+  } else if (dir == "U") {
+    return(pos + c(0, 1))
+  } else if (dir == "D") {
+    return(pos + c(0, -1))
+  }
+}
+
+for (x in df$a) {
+  dir <- str_sub(x, 1, 1)
+  num <- parse_number(x)
+
+  while (num > 0) {
+    # move h
+    h_pos <- move_h(h_pos, dir)
+
+    # if t within range of h, next movement
+    gap <- h_pos - t_pos
+    if (all(abs(gap) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t out of range, move t
+    move_t <- sign(gap)
+    t_pos <- t_pos + move_t
+    t_hist <- append(t_hist, list(t_pos))
+    num <- num - 1
+  }
+}
+
+unique(t_hist) |>
+  length()
+
+## 6376
+
+## part 2 -----------------
+
+h_pos <- c(0,0)
+t1_pos <- c(0,0)
+t2_pos <- c(0,0)
+t3_pos <- c(0,0)
+t4_pos <- c(0,0)
+t5_pos <- c(0,0)
+t6_pos <- c(0,0)
+t7_pos <- c(0,0)
+t8_pos <- c(0,0)
+t9_pos <- c(0,0)
+t9_hist <- list(c(0,0))
+
+move_h <- function(pos, dir) {
+  if (dir == "L") {
+    return(pos + c(-1, 0))
+  } else if (dir == "R") {
+    return(pos + c(1, 0))
+  } else if (dir == "U") {
+    return(pos + c(0, 1))
+  } else if (dir == "D") {
+    return(pos + c(0, -1))
+  }
+}
+
+for (x in df$a) {
+  dir <- str_sub(x, 1, 1)
+  num <- parse_number(x)
+
+  while (num > 0) {
+    # move h
+    h_pos <- move_h(h_pos, dir)
+
+    # if t1 within range of h, next movement
+    gap1 <- h_pos - t1_pos
+    if (all(abs(gap1) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t1 out of range, move t1
+    # compare to t2
+    move_t1 <- sign(gap1)
+    t1_pos <- t1_pos + move_t1
+    gap2 <- t1_pos - t2_pos
+    if (all(abs(gap2) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t2 out of range, move t2
+    # compare t3
+    move_t2 <- sign(gap2)
+    t2_pos <- t2_pos + move_t2
+    gap3 <- t2_pos - t3_pos
+    if (all(abs(gap3) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t3 out of range, move t3
+    # compare t4
+    move_t3 <- sign(gap3)
+    t3_pos <- t3_pos + move_t3
+    gap4 <- t3_pos - t4_pos
+    if (all(abs(gap4) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t4 out of range, move t4
+    # compare t5
+    move_t4 <- sign(gap4)
+    t4_pos <- t4_pos + move_t4
+    gap5 <- t4_pos - t5_pos
+    if (all(abs(gap5) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t5 out of range, move t5
+    # compare t6
+    move_t5 <- sign(gap5)
+    t5_pos <- t5_pos + move_t5
+    gap6 <- t5_pos - t6_pos
+    if (all(abs(gap6) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t6 out of range, move t6
+    # compare t7
+    move_t6 <- sign(gap6)
+    t6_pos <- t6_pos + move_t6
+    gap7 <- t6_pos - t7_pos
+    if (all(abs(gap7) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t7 out of range, move t7
+    # compare t8
+    move_t7 <- sign(gap7)
+    t7_pos <- t7_pos + move_t7
+    gap8 <- t7_pos - t8_pos
+    if (all(abs(gap8) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    # if t8 out of range, move t8
+    # compare t9
+    move_t8 <- sign(gap8)
+    t8_pos <- t8_pos + move_t8
+    gap9 <- t8_pos - t9_pos
+    if (all(abs(gap9) <= 1)) {
+      num <- num - 1
+      next
+    }
+
+    move_t9 <- sign(gap9)
+    t9_pos <- t9_pos + move_t9
+    t9_hist <- append(t9_hist, list(t9_pos))
+    num <- num - 1
+  }
+}
+
+unique(t9_hist) |>
+  length()
+
+## 2607
 
