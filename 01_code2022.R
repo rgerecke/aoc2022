@@ -653,3 +653,49 @@ unique(t9_hist) |>
 
 ## 2607
 
+# day 10 -----------------
+
+df <- read_csv("data/2022/day10.csv",
+               col_names = "a")
+
+reg <- 1
+
+for (x in df$a) {
+  if (x == "noop") {
+    reg <- append(reg, tail(reg, 1))
+  } else {
+    addx <- parse_number(x)
+    reg_tail <- tail(reg, 1)
+    reg <- append(reg, c(reg_tail, reg_tail + addx))
+  }
+}
+
+#20th, 60th, 100th, 140th, 180th, and 220th
+
+reg[20] * 20 +
+  reg[60] * 60 +
+  reg[100] * 100 +
+  reg[140] * 140 +
+  reg[180] * 180 +
+  reg[220] * 220
+
+## 12560
+
+# part 2 --------------------
+
+draw_chr <- function (pix, sprite) {
+  if (abs(sprite + row - pix) <= 1) {
+    return ("#")
+  } else {return(".")}
+}
+
+tibble(
+  a = rep(1:6, each = 40),
+  b = map2_chr(rep(1:40, 6), reg[2:241], draw_chr)
+) |>
+  group_by(a) |>
+  summarise(b = str_c(b, collapse = ""))
+
+## PLPAFBCL
+
+
