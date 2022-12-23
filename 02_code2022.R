@@ -254,3 +254,115 @@ map_dbl(out, pluck, "n_inspect") |>
   slice_max(value, n = 2)
 
 ## 13119526120
+
+
+# day 12 ----------------
+
+df <- read_csv("data/2022/day12.csv",
+               col_names = "a") |>
+  pull(a) |>
+  str_split(boundary("character"), simplify = TRUE) |>
+  matrix(nrow = 41)
+
+
+df_res <- expand_grid(r = 1:41, c = 1:173) |>
+  mutate(init = map2_chr(r,c,~df[.x,.y]),
+         dist = ifelse(init == "S", 0, Inf),
+         insp = ifelse(init == "E", "end", "Not Inspected"),
+         init = str_replace(init, "S", "a") |>
+           str_replace("E", "z"),
+         elev = match(init, letters))
+
+to_inspect <- filter(df_res, r == 21, c == 1)
+df_iterate <- filter(df_res, r != 21 | c != 1)
+
+explore_neighbors <- function (point_from) {
+  neighbors_loc <- filter(
+    df_iterate,
+    (abs(point_from$r - r) == 1 & point_from$c == c)
+    | (abs(point_from$c - c) == 1 & point_from$r == r),
+    insp != "Inspected",
+    elev <= point_from$elev + 1
+    ) |>
+    mutate(dist = point_from$dist + 1)
+
+  return(neighbors_loc)
+}
+
+tictoc::tic()
+
+while (!("end" %in% to_inspect$insp)) {
+
+  # set up to iterate through next points of inspection
+  inspections <- to_inspect |>
+    mutate(insp = "Inspected")
+
+  to_inspect <- map_dfr(group_split(inspections, row_number()),
+                        explore_neighbors) |>
+    distinct()
+
+  df_iterate <- anti_join(df_iterate, to_inspect, by = c("r", "c")) |>
+    bind_rows(inspections)
+
+  next
+}
+
+tictoc::toc()
+
+to_inspect |>
+  filter(insp == "end")
+
+## 490
+
+## part 2 ----------------------------
+
+# probably want to go backwards from the center until you arrive at the first a
+
+df_res2 <- expand_grid(r = 1:41, c = 1:173) |>
+  mutate(init = map2_chr(r,c,~df[.x,.y]),
+         dist = ifelse(init == "E", 0, Inf),
+         insp = ifelse(init == "E", "end", "Not Inspected"),
+         init = str_replace(init, "S", "a") |>
+           str_replace("E", "z"),
+         elev = match(init, letters))
+
+to_inspect <- filter(df_res2, r == 21, c == 149)
+df_iterate <- filter(df_res2, r != 21 | c != 149)
+
+explore_neighbors <- function (point_from) {
+  neighbors_loc <- filter(
+    df_iterate,
+    (abs(point_from$r - r) == 1 & point_from$c == c)
+    | (abs(point_from$c - c) == 1 & point_from$r == r),
+    insp != "Inspected",
+    elev >= point_from$elev - 1
+  ) |>
+    mutate(dist = point_from$dist + 1)
+
+  return(neighbors_loc)
+}
+
+tictoc::tic()
+
+while (!("a" %in% to_inspect$init)) {
+
+  # set up to iterate through next points of inspection
+  inspections <- to_inspect |>
+    mutate(insp = "Inspected")
+
+  to_inspect <- map_dfr(group_split(inspections, row_number()),
+                        explore_neighbors) |>
+    distinct()
+
+  df_iterate <- anti_join(df_iterate, to_inspect, by = c("r", "c")) |>
+    bind_rows(inspections)
+
+  next
+}
+
+tictoc::toc()
+
+to_inspect |>
+  filter(init == "a")
+
+## 488
